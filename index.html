@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Darren Xie · AI项目实施</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red: #FF2442;
+      --red-dim: rgba(255, 36, 66, 0.15);
+      --bg: #0a0a0a;
+      --bg-card: #111111;
+      --bg-card2: #161616;
+      --border: #222222;
+      --text: #e8e8e8;
+      --text-muted: #888888;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      height: 60px;
+      background: rgba(10, 10, 10, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--red);
+      letter-spacing: -0.5px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      font-size: 14px;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    .btn-nav {
+      padding: 6px 16px;
+      border: 1px solid var(--red);
+      border-radius: 4px;
+      color: var(--red) !important;
+      font-size: 13px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .btn-nav:hover {
+      background: var(--red);
+      color: #fff !important;
+    }
+
+    /* ── Layout ── */
+    main { padding-top: 60px; }
+    section { padding: 80px 0; }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── Hero ── */
+    #hero {
+      padding: 100px 0 80px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-name {
+      font-size: clamp(36px, 6vw, 60px);
+      font-weight: 700;
+      letter-spacing: -1.5px;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+
+    .hero-title {
+      font-size: 16px;
+      color: var(--red);
+      font-weight: 500;
+      margin-bottom: 20px;
+      letter-spacing: 0.5px;
+    }
+
+    .hero-desc {
+      font-size: 16px;
+      color: var(--text-muted);
+      max-width: 480px;
+      line-height: 1.7;
+      margin-bottom: 36px;
+    }
+
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 22px;
+      border-radius: 5px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--red);
+      color: #fff;
+      border: 1px solid var(--red);
+    }
+    .btn-primary:hover { background: #e01f3a; border-color: #e01f3a; }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: #444; color: #fff; }
+
+    /* ── Section header ── */
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 40px;
+    }
+
+    /* ── Project Card ── */
+    .project-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 36px;
+      margin-bottom: 24px;
+      transition: border-color 0.2s;
+    }
+    .project-card:hover { border-color: #333; }
+
+    .project-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .tag {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 9px;
+      border-radius: 3px;
+      background: var(--red-dim);
+      color: var(--red);
+      letter-spacing: 0.3px;
+    }
+
+    .tag-neutral {
+      background: #1a1a1a;
+      color: var(--text-muted);
+    }
+
+    .project-title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+
+    .project-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    /* ── Metrics ── */
+    .metrics {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    .metric {
+      flex: 1;
+      min-width: 120px;
+      background: var(--bg-card2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 18px;
+    }
+
+    .metric-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--red);
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+      margin-bottom: 4px;
+    }
+
+    .metric-label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ── Key insight ── */
+    .insight {
+      font-size: 13.5px;
+      color: #aaaaaa;
+      line-height: 1.75;
+      margin-bottom: 28px;
+      padding-left: 14px;
+      border-left: 2px solid var(--border);
+    }
+    .insight p + p { margin-top: 6px; }
+
+    /* ── Screenshots ── */
+    .screenshots-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .screenshots-3block {
+      display: grid;
+      grid-template-rows: auto auto;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .screenshot-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .screenshot {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      border-radius: 6px;
+      display: block;
+      background: #1a1a1a;
+    }
+
+    .screenshot-placeholder {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: #1a1a1a;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .screenshot-placeholder span {
+      font-size: 12px;
+      color: #333;
+    }
+
+    /* ── Tech stack ── */
+    .tech-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .tech-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .chip {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: #1a1a1a;
+      color: #999;
+      border: 1px solid #222;
+    }
+
+    .project-note {
+      font-size: 12px;
+      color: #555;
+      margin-top: 10px;
+    }
+
+    /* ── Writing / OSS ── */
+    .oss-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 28px 36px;
+    }
+
+    .oss-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .oss-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .oss-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-sm {
+      padding: 6px 16px;
+      font-size: 13px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .btn-sm:hover { border-color: #444; color: var(--text); }
+
+    /* ── Education ── */
+    .edu-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .edu-item:last-child { border-bottom: none; }
+
+    .edu-school { font-size: 15px; font-weight: 600; margin-bottom: 3px; }
+    .edu-detail { font-size: 13px; color: var(--text-muted); }
+    .edu-year { font-size: 13px; color: #555; white-space: nowrap; padding-top: 2px; }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 28px 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-left { font-size: 14px; font-weight: 600; }
+
+    .footer-right {
+      font-size: 13px;
+      color: var(--text-muted);
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .footer-right a:hover { color: var(--text); }
+
+    .footer-copy {
+      text-align: center;
+      font-size: 12px;
+      color: #3a3a3a;
+      margin-top: 16px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      nav { padding: 0 20px; }
+      .nav-links { gap: 16px; }
+      .nav-links a:not(.btn-nav):not(:last-child) { display: none; }
+
+      section { padding: 56px 0; }
+      #hero { padding: 64px 0 56px; }
+
+      .project-card { padding: 24px 20px; }
+      .oss-card { padding: 24px 20px; }
+
+      .screenshots-2col { grid-template-columns: 1fr; }
+      .screenshot-row { grid-template-columns: 1fr; }
+
+      .metrics { gap: 10px; }
+      .metric { min-width: 100px; }
+
+      .footer-inner { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Nav ── -->
+<nav>
+  <a href="#" class="nav-logo">DX</a>
+  <div class="nav-links">
+    <a href="#projects">Projects</a>
+    <a href="#writing">Writing</a>
+    <a href="https://github.com/DtoTHEmoon" target="_blank">GitHub</a>
+    <a href="#" class="btn-nav">下载简历</a>
+  </div>
+</nav>
+
+<main>
+
+  <!-- ── Hero ── -->
+  <section id="hero">
+    <div class="container">
+      <h1 class="hero-name">谢力维<br>Darren Xie</h1>
+      <p class="hero-title">AI项目实施 · 应届</p>
+      <p class="hero-desc">两个月独立完成三个AI落地项目——从提案到生产部署，全程一个人。</p>
+      <div class="hero-actions">
+        <a href="#" class="btn btn-primary">查看简历</a>
+        <a href="https://github.com/DtoTHEmoon" target="_blank" class="btn btn-ghost">GitHub →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Projects ── -->
+  <section id="projects">
+    <div class="container">
+      <p class="section-label">Projects</p>
+
+      <!-- Project 1: 方舟 -->
+      <div class="project-card">
+        <div class="project-tags">
+          <span class="tag">生产环境</span>
+          <span class="tag">医疗行业</span>
+          <span class="tag">独立交付</span>
+          <span class="tag-neutral tag">2026.03–05</span>
+        </div>
+        <h2 class="project-title">方舟AI智能报价系统</h2>
+        <p class="project-subtitle">职业健康体检报价，复杂单从 30 分钟压缩至 5 分钟</p>
+
+        <div class="metrics">
+          <div class="metric">
+            <div class="metric-value">30min → 5min</div>
+            <div class="metric-label">报价时间</div>
+          </div>
+          <div class="metric">
+            <div class="metric-value">98.5%</div>
+            <div class="metric-label">预算利用率</div>
+          </div>
+          <div class="metric">
+            <div class="metric-value">5/5</div>
+            <div class="metric-label">主管准确性评分</div>
+          </div>
+        </div>
+
+        <div class="insight">
+          <p>职检模块采用确定性规则引擎，78个有害因素零LLM调用，规避幻觉风险；</p>
+          <p>普检模块用 DeepSeek 解析需求 + 贪心算法匹配预算组合。</p>
+        </div>
+
+        <div class="screenshots-2col">
+          <img
+            class="screenshot"
+            src="assets/images/ark-main.png"
+            alt="方舟系统主界面"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+          >
+          <div class="screenshot-placeholder" style="display:none"><span>ark-main.png</span></div>
+
+          <img
+            class="screenshot"
+            src="assets/images/ark-finance.png"
+            alt="方舟财务模块"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+          >
+          <div class="screenshot-placeholder" style="display:none"><span>ark-finance.png</span></div>
+        </div>
+
+        <div class="tech-row">
+          <div class="tech-chips">
+            <span class="chip">Next.js</span>
+            <span class="chip">FastAPI</span>
+            <span class="chip">PostgreSQL</span>
+            <span class="chip">DeepSeek</span>
+            <span class="chip">Docker</span>
+            <span class="chip">PM2</span>
+          </div>
+        </div>
+        <p class="project-note">内网部署 · 面试可现场演示</p>
+      </div>
+
+      <!-- Project 2: Baichuan -->
+      <div class="project-card">
+        <div class="project-tags">
+          <span class="tag">大模型评测</span>
+          <span class="tag">Prompt工程</span>
+          <span class="tag">独立完成</span>
+          <span class="tag-neutral tag">2026.03–04</span>
+        </div>
+        <h2 class="project-title">Baichuan-M2 医疗大模型评测</h2>
+        <p class="project-subtitle">体检报告解读场景，系统迭代 4 版 Prompt，评分从 45 分提升至 98 分</p>
+
+        <div class="metrics">
+          <div class="metric">
+            <div class="metric-value">45 → 98</div>
+            <div class="metric-label">评测分数</div>
+          </div>
+          <div class="metric">
+            <div class="metric-value">40份</div>
+            <div class="metric-label">真实体检测试集</div>
+          </div>
+        </div>
+
+        <div class="insight">
+          <p>医疗场景漏报代价远大于误报，阈值设计偏向召回率；</p>
+          <p>完整记录每版 Prompt 的失败原因与改进逻辑，方法论可复用。</p>
+        </div>
+      </div>
+
+      <!-- Project 3: GrowthOS -->
+      <div class="project-card">
+        <div class="project-tags">
+          <span class="tag">个人项目</span>
+          <span class="tag">公网可访问</span>
+          <span class="tag-neutral tag">2026.05</span>
+        </div>
+        <h2 class="project-title">GrowthOS · AI人才智能平台</h2>
+        <p class="project-subtitle">四模块AI人才发展系统，从知识库到飞轮闭环</p>
+
+        <div class="metrics">
+          <div class="metric">
+            <div class="metric-value">30人</div>
+            <div class="metric-label">工程师数据</div>
+          </div>
+          <div class="metric">
+            <div class="metric-value">2074条</div>
+            <div class="metric-label">行为事件</div>
+          </div>
+          <div class="metric">
+            <div class="metric-value">16个</div>
+            <div class="metric-label">业务技能维度</div>
+          </div>
+        </div>
+
+        <div class="insight">
+          <p>技能标签从行为数据推断而非员工自填，区分 output 类行为（证明掌握）</p>
+          <p>与 consume 类行为（证明学习中），避免主观偏差污染推荐质量。</p>
+        </div>
+
+        <div class="screenshots-3block">
+          <img
+            class="screenshot"
+            style="aspect-ratio:21/9"
+            src="assets/images/gos-dashboard.png"
+            alt="GrowthOS Dashboard"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+          >
+          <div class="screenshot-placeholder" style="display:none;aspect-ratio:21/9"><span>gos-dashboard.png</span></div>
+
+          <div class="screenshot-row">
+            <img
+              class="screenshot"
+              src="assets/images/gos-heatmap.png"
+              alt="GrowthOS Heatmap"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+            >
+            <div class="screenshot-placeholder" style="display:none"><span>gos-heatmap.png</span></div>
+
+            <img
+              class="screenshot"
+              src="assets/images/gos-talent.png"
+              alt="GrowthOS Talent"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+            >
+            <div class="screenshot-placeholder" style="display:none"><span>gos-talent.png</span></div>
+          </div>
+        </div>
+
+        <div class="tech-row">
+          <div class="tech-chips">
+            <span class="chip">Next.js</span>
+            <span class="chip">FastAPI</span>
+            <span class="chip">PostgreSQL</span>
+            <span class="chip">ChromaDB</span>
+            <span class="chip">DeepSeek</span>
+            <span class="chip">BGE-small-zh</span>
+            <span class="chip">PM2</span>
+          </div>
+          <a href="http://101.35.23.197:3002/design/index.html" target="_blank" class="btn btn-ghost" style="font-size:13px;padding:7px 16px;white-space:nowrap">在线演示 →</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Writing / OSS ── -->
+  <section id="writing" style="border-top:1px solid var(--border)">
+    <div class="container">
+      <p class="section-label">Open Source &amp; Writing</p>
+
+      <div class="oss-card">
+        <h3 class="oss-title">Rein Skill · AI评测框架</h3>
+        <p class="oss-desc">量化评估 AI Agent 表现，对比评分 97% vs 52%</p>
+        <div class="oss-links">
+          <a href="https://github.com/DtoTHEmoon/rein-skill" target="_blank" class="btn-sm">GitHub</a>
+          <a href="https://dev.to/dtothemoon/why-your-ai-agent-keeps-making-the-same-mistakes-its-not-the-model-3pl" target="_blank" class="btn-sm">Dev.to</a>
+          <a href="https://juejin.cn/post/7643743746267119626" target="_blank" class="btn-sm">掘金</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Education ── -->
+  <section id="education" style="border-top:1px solid var(--border)">
+    <div class="container">
+      <p class="section-label">Education</p>
+
+      <div class="edu-item">
+        <div>
+          <div class="edu-school">暨南大学</div>
+          <div class="edu-detail">会计学（专升本）</div>
+        </div>
+        <div class="edu-year">2026.06 毕业</div>
+      </div>
+
+      <div class="edu-item">
+        <div>
+          <div class="edu-school">El Camino College</div>
+          <div class="edu-detail">Marketing · 美国加州</div>
+        </div>
+        <div class="edu-year">2017–2020</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ── Footer ── -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-left">Darren Xie · AI项目实施</div>
+      <div class="footer-right">
+        <a href="mailto:liweixie24@gmail.com">liweixie24@gmail.com</a>
+        <a href="https://github.com/DtoTHEmoon" target="_blank">github.com/DtoTHEmoon</a>
+      </div>
+    </div>
+    <p class="footer-copy">© 2026 Darren Xie</p>
+  </div>
+</footer>
+
+</body>
+</html>
